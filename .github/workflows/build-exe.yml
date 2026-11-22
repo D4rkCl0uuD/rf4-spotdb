@@ -26,7 +26,7 @@ jobs:
 
       - name: EXE bauen
         run: >
-          pyinstaller --noconfirm --noconsole --name RF4SpotDB
+          pyinstaller --noconfirm --onefile --noconsole --name RF4SpotDB
           --icon app.ico
           --add-data "web;web"
           --add-data "app.ico;."
@@ -34,7 +34,10 @@ jobs:
 
       - name: ZIP erstellen
         shell: pwsh
-        run: Compress-Archive -Path dist/RF4SpotDB -DestinationPath RF4SpotDB-Windows.zip
+        run: |
+          New-Item -ItemType Directory -Path paket/RF4SpotDB | Out-Null
+          Copy-Item dist/RF4SpotDB.exe paket/RF4SpotDB/
+          Compress-Archive -Path paket/RF4SpotDB -DestinationPath RF4SpotDB-Windows.zip
 
       - uses: actions/upload-artifact@v4
         with:

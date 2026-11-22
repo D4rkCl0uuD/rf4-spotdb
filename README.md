@@ -7,7 +7,7 @@ Alles läuft offline: Der kleine Server ist nur auf diesem PC erreichbar (127.0.
 ## Download für Windows (ohne Python)
 1. Unter **[Releases](https://github.com/D4rkCl0uuD/rf4-spotdb/releases/latest)** die Datei `RF4SpotDB-Windows.zip` herunterladen.
 2. ZIP entpacken (Rechtsklick → *Alle extrahieren*), z. B. auf den Desktop.
-3. Im Ordner `RF4SpotDB` die **`RF4SpotDB.exe`** starten.
+3. Im Ordner `RF4SpotDB` die **`RF4SpotDB.exe`** starten. Der erste Start dauert ein paar Sekunden.
 
 Deine Spots werden im Ordner `daten` neben der `.exe` gespeichert. Den Ordner beim Update auf eine neue Version einfach in den neuen Ordner kopieren.
 

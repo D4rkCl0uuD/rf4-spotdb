@@ -68,7 +68,16 @@ def main():
         width=1500, height=900, min_size=(1000, 650),
         maximized=True, background_color="#0B0E13",
     )
-    webview.start(icon=str(ICON))
+    try:
+        webview.start(icon=str(ICON))
+    except Exception as fehler:
+        # Fenster kann nicht geöffnet werden (z. B. fehlendes WebView2) -> Browser
+        print(f"App-Fenster konnte nicht geöffnet werden ({fehler}) – öffne Browser.")
+        webbrowser.open(url)
+        try:
+            threading.Event().wait()
+        except KeyboardInterrupt:
+            pass
     server.shutdown()
 
 
