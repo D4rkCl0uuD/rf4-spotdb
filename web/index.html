@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RF4 Spot-Datenbank</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="kopf">
+  <div class="marke">
+    <img class="marke-logo" src="logo.png" alt="">
+    <div>
+      <div class="marke-titel">RF4 Spot-Datenbank</div>
+      <div class="marke-sub">Russian Fishing 4 · lokal</div>
+    </div>
+  </div>
+
+  <label class="suche">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input id="suche" type="search" placeholder="Suchen … Gewässer, Köder, Dip, Montage, Notizen" autocomplete="off">
+  </label>
+
+  <button id="btn-neu" class="btn btn-primaer" title="Neuer Spot (Strg+N)">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    Neuer Spot
+  </button>
+</header>
+
+<section class="filterleiste">
+  <div class="filter-gruppe">
+    <select id="f-gewaesser" class="feld feld-klein" title="Gewässer"></select>
+    <div class="auswahl auswahl-filter" id="auswahl-filter-fisch">
+      <input id="f-fischart" class="feld feld-klein" type="text" placeholder="Alle Fischarten" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false">
+      <button type="button" class="auswahl-leeren" title="Fischart-Filter entfernen" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      <svg class="auswahl-pfeil" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+      <div class="auswahl-liste" role="listbox" hidden></div>
+    </div>
+  </div>
+
+  <div class="chips" id="f-trophaee" role="group" aria-label="Trophäen-Filter">
+    <button data-wert="" class="chip aktiv">Alle</button>
+    <button data-wert="alle_trophaeen" class="chip">Nur Trophäen</button>
+    <button data-wert="Trophäe" class="chip chip-gelb"><span class="punkt"></span>Trophäe</button>
+    <button data-wert="Seltene Trophäe" class="chip chip-blau"><span class="punkt"></span>Seltene Trophäe</button>
+    <button data-wert="keine" class="chip">Keine</button>
+  </div>
+
+  <button id="f-reset" class="btn btn-text">Filter zurücksetzen</button>
+
+  <div class="rechts">
+    <span id="anzahl" class="anzahl"></span>
+    <div class="umschalter" role="group" aria-label="Ansicht">
+      <button data-ansicht="karten" title="Kartenansicht">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg>
+        Karten
+      </button>
+      <button data-ansicht="tabelle" title="Tabellenansicht">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        Tabelle
+      </button>
+    </div>
+  </div>
+</section>
+
+<main id="inhalt" class="inhalt"></main>
+
+<!-- Editor (seitliches Panel) -->
+<div id="schleier" class="schleier" hidden></div>
+<aside id="editor" class="editor" aria-hidden="true">
+  <form id="formular" novalidate>
+    <div class="editor-kopf">
+      <div>
+        <div id="editor-titel" class="editor-titel">Neuer Spot</div>
+        <div id="editor-info" class="editor-info"></div>
+      </div>
+      <button type="button" class="btn-icon" id="btn-schliessen" title="Schließen (Esc)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+
+    <div class="editor-inhalt">
+      <div class="abschnitt">
+        <div class="abschnitt-titel">Ort</div>
+        <div class="raster raster-3">
+          <label class="eingabe span-2">
+            <span>Gewässer <b>*</b></span>
+            <input name="gewaesser" list="gewaesser-liste" class="feld" autocomplete="off" placeholder="z. B. Old Burg Lake">
+            <datalist id="gewaesser-liste"></datalist>
+          </label>
+          <label class="eingabe">
+            <span>Port <b>*</b></span>
+            <input name="port" class="feld mono" inputmode="numeric" maxlength="4" placeholder="1234" autocomplete="off">
+          </label>
+          <label class="eingabe">
+            <span>Koordinaten</span>
+            <input name="koordinaten" class="feld mono" placeholder="54:62" autocomplete="off">
+          </label>
+          <label class="eingabe">
+            <span>Datum</span>
+            <input name="datum" type="date" class="feld">
+          </label>
+          <label class="eingabe">
+            <span>Tageszeit (Ingame)</span>
+            <input name="tageszeit" class="feld" placeholder="05:00 – 09:00" autocomplete="off">
+          </label>
+        </div>
+      </div>
+
+      <div class="abschnitt">
+        <div class="abschnitt-titel">Fang</div>
+        <div class="raster raster-3">
+          <div class="eingabe span-2">
+            <span>Fischart</span>
+            <div class="auswahl" id="auswahl-fisch">
+              <input name="fischart" class="feld" placeholder="Fischart wählen oder zum Suchen tippen …" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false">
+              <svg class="auswahl-pfeil" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+              <div class="auswahl-liste" role="listbox" hidden></div>
+            </div>
+          </div>
+          <label class="eingabe">
+            <span>Gewicht</span>
+            <input name="gewicht" class="feld" placeholder="1,65 kg" autocomplete="off">
+          </label>
+        </div>
+        <div class="eingabe">
+          <span>Trophäe</span>
+          <div class="segment" id="seg-trophaee" role="radiogroup">
+            <button type="button" data-wert="" class="aktiv">Keine</button>
+            <button type="button" data-wert="Trophäe" class="seg-gelb">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>
+              Trophäe
+            </button>
+            <button type="button" data-wert="Seltene Trophäe" class="seg-blau">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5z"/></svg>
+              Seltene Trophäe
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="abschnitt">
+        <div class="abschnitt-titel">Ausrüstung</div>
+        <div class="raster raster-3">
+          <label class="eingabe span-2">
+            <span>Köder / Futter</span>
+            <input name="koeder" class="feld" autocomplete="off">
+          </label>
+          <label class="eingabe">
+            <span>Dip</span>
+            <input name="dip" class="feld" placeholder="z. B. Erdbeere" autocomplete="off">
+          </label>
+          <label class="eingabe">
+            <span>Montage</span>
+            <input name="montage" class="feld" autocomplete="off">
+          </label>
+          <label class="eingabe">
+            <span>Tiefe</span>
+            <input name="tiefe" class="feld" placeholder="2,5 m" autocomplete="off">
+          </label>
+          <label class="eingabe">
+            <span>Clip / Wurfweite</span>
+            <input name="clip" class="feld" placeholder="35 m" autocomplete="off">
+          </label>
+        </div>
+        <label class="eingabe">
+          <span>Notizen</span>
+          <textarea name="notizen" class="feld" rows="4" placeholder="Beobachtungen, Wetter, Taktik …"></textarea>
+        </label>
+      </div>
+
+      <div class="abschnitt">
+        <div class="abschnitt-titel">Screenshots <small>+ zum Hinzufügen, Bild hineinziehen oder Feld anklicken und Strg+V · Klick aufs Bild = Vollbild</small></div>
+        <div class="bilder">
+          <div class="bildfeld" data-feld="bild_trophaee" tabindex="0">
+            <div class="bildfeld-titel">Trophäe</div>
+            <div class="bildfeld-flaeche"></div>
+          </div>
+          <div class="bildfeld" data-feld="bild_montage" tabindex="0">
+            <div class="bildfeld-titel">Montage</div>
+            <div class="bildfeld-flaeche"></div>
+          </div>
+          <div class="bildfeld" data-feld="bild_kescher" tabindex="0">
+            <div class="bildfeld-titel">Kescher</div>
+            <div class="bildfeld-flaeche"></div>
+          </div>
+        </div>
+        <input type="file" id="datei-wahl" accept="image/png,image/jpeg,image/gif,image/bmp,image/webp" hidden>
+      </div>
+    </div>
+
+    <div class="editor-fuss">
+      <button type="button" class="btn btn-gefahr" id="btn-loeschen">Löschen</button>
+      <div class="rechts">
+        <button type="button" class="btn btn-sekundaer" id="btn-abbrechen">Abbrechen</button>
+        <button type="submit" class="btn btn-primaer" id="btn-speichern" title="Speichern (Strg+S)">Speichern</button>
+      </div>
+    </div>
+  </form>
+</aside>
+
+<!-- Bild in voller Größe -->
+<div id="lightbox" class="lightbox" hidden>
+  <img alt="">
+  <button class="btn-icon lightbox-zu" title="Schließen (Esc)">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+  </button>
+</div>
+
+<!-- Bestätigungsdialog -->
+<div id="dialog" class="dialog-huelle" hidden>
+  <div class="dialog" role="dialog" aria-modal="true">
+    <div class="dialog-titel"></div>
+    <div class="dialog-text"></div>
+    <div class="dialog-knoepfe">
+      <button class="btn btn-sekundaer" data-antwort="nein">Abbrechen</button>
+      <button class="btn btn-gefahr" data-antwort="ja">OK</button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts" class="toasts"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

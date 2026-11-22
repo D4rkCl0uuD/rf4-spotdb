@@ -1,0 +1,47 @@
+name: Windows-EXE bauen
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Abhängigkeiten installieren
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller
+
+      - name: EXE bauen
+        run: >
+          pyinstaller --noconfirm --noconsole --name RF4SpotDB
+          --icon app.ico
+          --add-data "web;web"
+          --add-data "app.ico;."
+          main.py
+
+      - name: ZIP erstellen
+        shell: pwsh
+        run: Compress-Archive -Path dist/RF4SpotDB -DestinationPath RF4SpotDB-Windows.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RF4SpotDB-Windows
+          path: RF4SpotDB-Windows.zip
+
+      - name: Release veröffentlichen
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: RF4SpotDB-Windows.zip

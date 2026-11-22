@@ -1,0 +1,13 @@
+# Persönliche Daten (Spots, Screenshots, Einstellungen)
+daten/
+
+# Python / PyCharm
+__pycache__/
+*.pyc
+.venv/
+.idea/
+
+# PyInstaller
+build/
+dist/
+*.spec
