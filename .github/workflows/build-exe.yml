@@ -2,7 +2,8 @@ name: Windows-EXE bauen
 
 on:
   push:
-    tags: ["v*"]
+    branches: [main]
+    paths-ignore: ["README.md"]
   workflow_dispatch:
 
 permissions:
@@ -41,7 +42,13 @@ jobs:
           path: RF4SpotDB-Windows.zip
 
       - name: Release veröffentlichen
-        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: v1.${{ github.run_number }}
+          name: RF4 Spot-Datenbank v1.${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          make_latest: true
+          body: |
+            **Download:** `RF4SpotDB-Windows.zip` herunterladen, entpacken und `RF4SpotDB.exe` starten.
+            Deine Spots liegen im Ordner `daten` neben der .exe. Beim Update diesen Ordner in die neue Version kopieren.
           files: RF4SpotDB-Windows.zip
